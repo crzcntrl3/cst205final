@@ -6,11 +6,11 @@ class Question():
     def __init__(self, question, answers, image_path):
         self.question = question
         self.answers = answers
-        scrumble_image(image_path)
+        scramble_image(image_path)
 
-    def scrumble_image(self, image_path):
+    def scramble_image(self, image_path):
         # this should scramble the image using the path in the argument
-        self.scrumbled_image = image_path
+        # self.scrambled_image =
 
     def get_answer_values(self):
         return [answer.value for answer in self.answers]
