@@ -1,5 +1,4 @@
 # Guess That Picture game
-# Peter Zed, Nicholas Hinds, Andy Alameddine, Pooya Beheshti, Jordan Cruz
 
 
 class Question():
