@@ -1,4 +1,7 @@
 # Guess That Picture game
+import os
+
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 GAME_OPTIONS = [
     {
@@ -127,7 +130,7 @@ class Quiz():
         self.questions = questions
         self.correct = []
         self.incorrect = []
-        self.makeSounds()
+        self.makeGameSounds()
 
     def start(self):
         # Loop through questions and get answers for each
@@ -168,10 +171,13 @@ class Quiz():
 
     def handleIncorrectAnswer(self, question):
         printNow("Wrong answer!\n")
+        play(self.gameSounds['gasp'])
         self.incorrect.append(question)
 
-    def makeSounds(self):
-        self.gameSounds = {}
+    def makeGameSounds(self):
+        self.gameSounds = {
+          "gasp": makeSound("%s/sounds/gasp2.wav" % PATH)
+        }
 
 
 class Question():
@@ -204,12 +210,12 @@ class Answer():
 def chooseGameTopic():
     topics = [option['topic'] for option in GAME_OPTIONS]
 
-    printNow("Choose 'topic':")
+    printNow("Choose topic:")
     for index, topic in enumerate(topics):
         printNow("%s. %s" % (index + 1, topic))
 
     while True:
-        response = requestString("Enter your answer")
+        response = requestString("Choose topic")
         if response and int(response) in range(1, len(topics) + 1):
             break
     return int(response) - 1
