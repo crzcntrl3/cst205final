@@ -165,7 +165,7 @@ class Quiz():
 
     def handleCorrectAnswer(self, question):
         printNow("You are right!\n")
-        self.incorrect.append(question)
+        self.correct.append(question)
 
     def handleIncorrectAnswer(self, question):
         printNow("Wrong answer!\n")
