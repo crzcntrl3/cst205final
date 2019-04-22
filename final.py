@@ -6,6 +6,7 @@ class Quiz():
         self.questions = questions
         self.correct = []
         self.incorrect = []
+        self.makeSounds()
     
     def start(self):
         # Loop through questions and get answers for each
@@ -14,14 +15,15 @@ class Quiz():
             response = self.handleInput(question)
             answer = question.get_answer(response - 1)
             if answer.is_correct:
+                self.handleCorrectAnswer(question)
                 self.correct.append(question)
             else:
-                self.incorrect.append(question)
+                self.handleIncorrectAnswer(question)
+                
         # Question taking over, display some results
-        print('Thank you for taking the quiz, here are your results!')
-        print('Correct: ' + str(len(self.correct)))
-        print('Incorrect: ' + str(len(self.incorrect)))
-
+        showInformation("Thank you for taking the quiz, here are your results!\n" \
+                        "Correct answers: %s\n" \
+                        "Incorrect answers: %s" % (str(len(self.correct)), str(len(self.incorrect))))
 
     def printQuestion(self, question):
         printNow(question.question)
@@ -31,14 +33,25 @@ class Quiz():
     def handleInput(self, question):
         while True:
             response = requestString("Enter your answer")
-            if int(response) in range(1, len(question.answers) + 1):
+            if response and int(response) in range(1, len(question.answers) + 1):
                 response = int(response)
                 print('\n')
                 break
-            else:
-                print("Please enter a valid response")
-        
+            else:                
+                print("Please enter a valid response")                                
+                        
         return response
+        
+    def handleCorrectAnswer(self, question):
+        printNow("You are right!\n")
+        self.incorrect.append(question)
+      
+    def handleIncorrectAnswer(self, question):
+        printNow("Wrong answer!\n")
+        self.incorrect.append(question)
+      
+    def makeSounds(self):
+        self.gameSounds = {}
 
 class Question():
     def __init__(self, question, answers, image_path=''):
@@ -48,8 +61,6 @@ class Question():
 
     def scramble_image(self, image_path):
         return
-        # this should scramble the image using the path in the argument
-        # self.scrambled_image =
 
     def get_answer_values(self):
         return [answer.value for answer in self.answers]
