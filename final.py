@@ -137,7 +137,6 @@ class Quiz():
             answer = question.get_answer(response - 1)
             if answer.is_correct:
                 self.handleCorrectAnswer(question)
-                self.correct.append(question)
             else:
                 self.handleIncorrectAnswer(question)
 
