@@ -122,8 +122,114 @@ GAME_OPTIONS = [
                 ]
             },
         ]
-    }
+    },
+    {
+        'topic': 'Rare animals',
+        'questions': [
+            {
+                'value': 'What kind of animal is a vaquita?',
+                'image_path': 'pictures/vaquita.jpg',
+                'answers': [
+                    {
+                        'value': 'A desert reptile',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'A marine mammal',
+                        'is_correct': True,
+                    },
+                    {
+                        'value': 'A taco-shaped bird',
+                        'is_correct': False,
+                    },
+                ]
+            },
+            {
+                'value': 'What is Poecilotheria metallica?',
+                'image_path': 'pictures/metallica.jpg',
+                'answers': [
+                    {
+                        'value': 'A type of tarantula',
+                        'is_correct': True,
+                    },
+                    {
+                        'value': 'A bird',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'A loud rock band',
+                        'is_correct': False,
+                    },
+                ]
+            },
+            {
+                'value': 'The Saola is often called what?',
+                'image_path': 'pictures/saola.jpg',
+                'answers': [
+                    {
+                        'value': 'Chilean watergoblin',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Asian unicorn',
+                        'is_correct': True,
+                    },
+                    {
+                        'value': 'African treehugger',
+                        'is_correct': False,
+                    },
+                ]
+            },
+            {
+                'value': 'What solenodons look like?',
+                'image_path': 'pictures/shrews.jpg',
+                'answers': [
+                    {
+                        'value': 'Parakeets',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Horses',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Shrews',
+                        'is_correct': True,
+                    },
+                ]
+            },
+            {
+                'value': 'What kind of animal is the Lycaon pictus?',
+                'image_path': 'pictures/pictus.jpg',
+                'answers': [
+                    {
+                        'value': 'African wild dog',
+                        'is_correct': True,
+                    },
+                    {
+                        'value': 'Bonobo',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Blue whale',
+                        'is_correct': False,
+                    },
+                ]
+            },
+        ]
+    },
 ]
+
+
+def addBlackFrame(picture):
+    width = getWidth(picture)
+    height = getHeight(picture)
+    thickness = 20
+    addRectFilled(picture, 0, 0, width, thickness, black)
+    addRectFilled(picture, 0, height - thickness, width, thickness, black)
+    addRectFilled(picture, 0, 0, thickness, height, black)
+    addRectFilled(picture, width - thickness, 0, thickness, height, black)
+    return picture
 
 def clip(source, start, end):
     target = makeEmptySound(end - start, int(getSamplingRate(source)))
@@ -274,7 +380,7 @@ class Question():
         self.image_path = image_path
 
     def getScrambledImage(self):
-        slice_num = 4
+        slice_num = 8
         picture = makePicture("%s/%s" % (PATH, self.image_path))
         width = getWidth(picture)
         height = getHeight(picture)
@@ -284,17 +390,20 @@ class Question():
         slices = range(0, slice_num * slice_num)
         random.shuffle(slices)
         current_slice = 0
-    
+
         for x in range(0, slice_num):
-            for y in range(0, slice_num):  
+            for y in range(0, slice_num):
                 col = slices[current_slice] % slice_num
                 row = slices[current_slice] // slice_num
                 for orig_x in range(x * slice_width, slice_width + (x * slice_width)):
                     for orig_y in range(y * slice_height, slice_height + (y * slice_height)):
                         px = getPixel(picture, orig_x, orig_y)
                         color = getColor(px)
-                        setColor(getPixel(scrambled_picture, (orig_x - (x * slice_width)) + (col * slice_width), (orig_y - (y * slice_height)) + (row * slice_height)), color)
+                        setColor(getPixel(scrambled_picture, (orig_x - (x * slice_width)) + (
+                            col * slice_width), (orig_y - (y * slice_height)) + (row * slice_height)), color)
                 current_slice += 1
+                
+        scrambled_picture = addBlackFrame(scrambled_picture)
         return scrambled_picture
 
     def getAnswerValues(self):
@@ -302,10 +411,9 @@ class Question():
 
     def getAnswer(self, index):
         return self.answers[index]
-        
+
     def getUnscrambledImage(self):
         return makePicture("%s/%s" % (PATH, self.image_path))
-    
 
 
 class Answer():
