@@ -1,5 +1,6 @@
 # Guess That Picture game
 import os
+import random
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -125,6 +126,25 @@ GAME_OPTIONS = [
 ]
 
 
+def clip(source, start, end):
+    target = makeEmptySound(end - start, int(getSamplingRate(source)))
+    targetIndex = 0
+    for index in range(start, end):
+        value = getSampleValueAt(source, index)
+        setSampleValueAt(target, targetIndex, value)
+        targetIndex = targetIndex + 1
+    return target
+
+def copy(source, target, start):
+    targetLength = getLength(target)
+    for index in range(0, getLength(source)):
+        targetIndex = start + index
+        if targetIndex >= targetLength:
+            break
+        value = getSampleValueAt(source, index)
+        setSampleValueAt(target, targetIndex, value)
+    return target
+ 
 class Quiz():
     def __init__(self, questions):
         self.questions = questions
@@ -138,15 +158,17 @@ class Quiz():
             self.printQuestion(question)
             response = self.handleInput(question)
             answer = question.get_answer(response - 1)
+            
             if answer.is_correct:
                 self.handleCorrectAnswer(question)
             else:
                 self.handleIncorrectAnswer(question)
 
-        # Question taking over, display some results
-        showInformation("Thank you for taking the quiz, here are your results!\n"
-                        "Correct 'answers': %s\n"
-                        "Incorrect 'answers': %s" % (str(len(self.correct)), str(len(self.incorrect))))
+        # Question taking is over, display some results
+        if len(self.correct) > len(self.incorrect):
+            self.handleWin()
+        else:
+            self.handleLose()
 
     def printQuestion(self, question):
         printNow(question.question)
@@ -154,29 +176,87 @@ class Quiz():
             print("%s. %s" % (str(index + 1), answer))
 
     def handleInput(self, question):
+        printNow("Enter your answer")
         while True:
-            response = requestString("Enter your answer")
+            response = raw_input()
             if response and int(response) in range(1, len(question.answers) + 1):
                 response = int(response)
                 print('\n')
                 break
             else:
-                print("Please enter a valid response")
+                printNow("Please enter a valid response")
 
         return response
+        
+    def isLastQuestion(self):
+        return len(self.correct) + len(self.incorrect) == len(self.questions)
 
     def handleCorrectAnswer(self, question):
-        printNow("You are right!\n")
         self.correct.append(question)
+        
+        if not self.isLastQuestion():
+          printNow("You are right!\n")
+          reaction = random.choice(self.gameSounds['yays'])
+          play(reaction)
+
 
     def handleIncorrectAnswer(self, question):
-        printNow("Wrong answer!\n")
-        play(self.gameSounds['gasp'])
         self.incorrect.append(question)
 
+        if not self.isLastQuestion():
+            printNow("Wrong answer!\n")
+            reaction = random.choice(self.gameSounds['oohs'])
+            play(reaction)
+        
+    def handleWin(self):
+        play(self.gameSounds['win'][0])
+        showInformation("You win!\n"
+                        "Correct answers: %s\n"
+                        "Incorrect answers: %s" % (len(self.correct), len(self.incorrect))
+                       )
+        
+    def handleLose(self):
+        play(self.gameSounds['lose'][0])
+        showInformation("You lose!\n"
+                        "Correct answers: %s\n"
+                        "Incorrect answers: %s" % (len(self.correct), len(self.incorrect))
+                       )
+
     def makeGameSounds(self):
+        samplingRate = 44100
+        oohs = makeSound("%s/sounds/oohs.wav" % PATH)
+        yays = makeSound("%s/sounds/yays.wav" % PATH)
+        thanks = makeSound("%s/sounds/thanks.wav" % PATH)
+        applause = makeSound("%s/sounds/applause.wav" % PATH)
+        win = makeEmptySound(getLength(applause) + getLength(thanks), samplingRate)
+        win = copy(applause, win, 0)
+        win = copy(thanks, win, getLength(applause))
+        nooo = makeSound("%s/sounds/nooo.wav" % PATH)
+        lose = makeEmptySound(getLength(nooo) + getLength(thanks), samplingRate)
+        lose = copy(nooo, lose, 0)
+        lose = copy(thanks, lose, getLength(nooo))
+        
         self.gameSounds = {
-          "gasp": makeSound("%s/sounds/gasp2.wav" % PATH)
+            "yays": [
+                clip(yays, 1998, 103563),
+                clip(yays, 106893, 206460)
+            ],
+            "oohs": [
+                clip(oohs, 7108, 72857),
+                clip(oohs, 99512, 184808),
+                clip(oohs, 262996, 341184),
+                clip(oohs, 355400, 451358),
+                clip(oohs, 490452, 584633),
+                clip(oohs, 611288, 748117),
+                clip(oohs, 787211, 908047),
+                clip(oohs, 963134, 1119510),
+            ],
+            "lose": [
+                lose,
+            ],
+            "win": [
+               win,
+            ],
         }
 
 
@@ -210,18 +290,23 @@ class Answer():
 def chooseGameTopic():
     topics = [option['topic'] for option in GAME_OPTIONS]
 
-    printNow("Choose topic:")
+    printNow("Choose topic:")        
     for index, topic in enumerate(topics):
         printNow("%s. %s" % (index + 1, topic))
 
     while True:
-        response = requestString("Choose topic")
+        response = raw_input()
         if response and int(response) in range(1, len(topics) + 1):
             break
     return int(response) - 1
 
-def game():
+def intro():
+    intro = makeSound("%s/sounds/intro.wav" % PATH)
+    play(intro)
     showInformation("Welcome to the quiz")
+    
+def game():
+    intro()
 
     # choose the topic
     topic = chooseGameTopic()
