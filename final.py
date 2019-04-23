@@ -9,55 +9,91 @@ GAME_OPTIONS = [
         'topic': 'Car parts',
         'questions': [
             {
-                'value': 'The part that is responsible for something',
-                'image_path': 'pictures/axle.jpg',
+                'value': 'What engine component is this?',
+                'image_path': 'pictures/crankshaft.jpg',
                 'answers': [
                     {
-                        'value': 'air filter',
+                        'value': 'Axle rod',
                         'is_correct': False,
                     },
                     {
-                        'value': 'clutch',
+                        'value': 'Camshaft',
                         'is_correct': False,
                     },
                     {
-                        'value': 'axle',
+                        'value': 'Crankshaft',
                         'is_correct': True,
                     },
                 ]
             },
             {
-                'value': 'The part that makes the car something',
-                'image_path': 'pictures/compressor.jpg',
+                'value': 'What Transmission component is this?',
+                'image_path': 'pictures/clutchPlate.jpg',
                 'answers': [
                     {
-                        'value': 'spark plug',
+                        'value': 'Frisbee Wheel',
                         'is_correct': False,
                     },
                     {
-                        'value': 'compressor',
+                        'value': 'Clutch Plate',
                         'is_correct': True,
                     },
                     {
-                        'value': 'radiator',
+                        'value': 'Flux Capacitor',
                         'is_correct': False,
                     },
                 ]
             },
             {
-                'value': 'What does something to a car',
-                'image_path': 'pictures/piston.jpg',
+                'value': 'what suspension component is this?',
+                'image_path': 'pictures/controlArm.jpg',
                 'answers': [
                     {
-                        'value': 'piston',
+                        'value': 'Control Arm',
                         'is_correct': True,
                     },
                     {
-                        'value': 'jack',
+                        'value': 'Swing Arm',
                         'is_correct': False,
                     },
                     {
-                        'value': 'muffler',
+                        'value': 'Wish Bone',
+                        'is_correct': False,
+                    },
+                ]
+            },
+            {
+                'value': 'What engine component is this?',
+                'image_path': 'pictures/engineControlUnit.jpg',
+                'answers': [
+                    {
+                        'value': 'AI Unit',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Auto Drive Control Unit',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Engine Control Unit',
+                        'is_correct': True,
+                    },
+                ]
+            },
+            {
+                'value': 'What brake componenet is this?',
+                'image_path': 'pictures/brakeRotor.jpg',
+                'answers': [
+                    {
+                        'value': 'Saw Blade',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'Brake Rotor',
+                        'is_correct': True,
+                    },
+                    {
+                        'value': 'Road Rage Defense Unit',
                         'is_correct': False,
                     },
                 ]
@@ -220,7 +256,6 @@ GAME_OPTIONS = [
     },
 ]
 
-
 def addBlackFrame(picture):
     width = getWidth(picture)
     height = getHeight(picture)
@@ -378,6 +413,7 @@ class Question():
         self.question = question
         self.answers = answers
         self.image_path = image_path
+
 
     def getScrambledImage(self):
         slice_num = 8
