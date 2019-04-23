@@ -3,7 +3,7 @@ import os
 import random
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-
+# Topics to choose for Quiz
 GAME_OPTIONS = [
     {
         'topic': 'Car parts',
@@ -255,7 +255,7 @@ GAME_OPTIONS = [
         ]
     },
 ]
-
+# Function that creates black frame
 def addBlackFrame(picture):
     width = getWidth(picture)
     height = getHeight(picture)
@@ -266,6 +266,7 @@ def addBlackFrame(picture):
     addRectFilled(picture, width - thickness, 0, thickness, height, black)
     return picture
 
+# Function that clips a given sound
 def clip(source, start, end):
     target = makeEmptySound(end - start, int(getSamplingRate(source)))
     targetIndex = 0
@@ -275,7 +276,7 @@ def clip(source, start, end):
         targetIndex = targetIndex + 1
     return target
 
-
+# Function to copy source to target
 def copy(source, target, start):
     targetLength = getLength(target)
     for index in range(0, getLength(source)):
@@ -286,7 +287,7 @@ def copy(source, target, start):
         setSampleValueAt(target, targetIndex, value)
     return target
 
-
+#  Class to handle
 class Quiz():
     def __init__(self, questions):
         self.questions = questions
@@ -438,7 +439,7 @@ class Question():
                         setColor(getPixel(scrambled_picture, (orig_x - (x * slice_width)) + (
                             col * slice_width), (orig_y - (y * slice_height)) + (row * slice_height)), color)
                 current_slice += 1
-                
+
         scrambled_picture = addBlackFrame(scrambled_picture)
         return scrambled_picture
 
