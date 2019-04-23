@@ -124,6 +124,7 @@ GAME_OPTIONS = [
         ]
     }
 ]
+
 class puzzle:
   def __init__(self, pic):
     self.pic = makePicture(pic)
