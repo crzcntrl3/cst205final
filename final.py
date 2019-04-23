@@ -125,129 +125,6 @@ GAME_OPTIONS = [
     }
 ]
 
-
-class Puzzle:
-    def __init__(self, image_path):
-        self.pic = makePicture("%s/%s" % (PATH, image_path))
-
-    # Makes the individual slice of the original image
-    def slicing(self, pic, startX, startY, endX, endY):
-        x = abs(startX-endX)
-        y = abs(startY-endY)
-        slicedPic = makeEmptyPicture(x, y)
-        # creates arrays to hold the information of the original and empty images
-        originalPixels = []
-        slicedPixels = []
-        # grabs pixel information of the original image and store it in its corresponding array
-        for originalX in range(startX, endX):
-            for originalY in range(startY, endY):
-                originalP = getPixel(self.pic, originalX, originalY)
-                originalPixels.append(originalP)
-        # grabs pixel information of the empty image and store it in its corresponding array
-        for slicedX in range(0, x):
-            for slicedY in range(0, y):
-                slicedP = getPixel(slicedPic, slicedX, slicedY)
-                slicedPixels.append(slicedP)
-        # uses the zip() to combine the two arrays and steps through each pair in the array
-        for combinePixels in zip(originalPixels, slicedPixels):
-            # grabs each element of the zipped array
-            origPix = combinePixels[0]
-            slicedPix = combinePixels[1]
-            # sets the color to the empty image
-            setColor(slicedPix, getColor(origPix))
-        return slicedPic
-
-    # slices the image into 12 peices
-    def puzzleSlices(self, pic):
-        w = getWidth(self.pic)
-        h = getHeight(self.pic)
-        sectionArray = []
-
-        # First Quater
-        section1 = self.slicing(self.pic, 0, 0, w/3, h/4)
-        section2 = self.slicing(self.pic, (w/3), 0, (w*2)/3, h/4)
-        section3 = self.slicing(self.pic, (w*2)/3, 0, w, h/4)
-        # Second Quater
-        section4 = self.slicing(self.pic, 0, h/4, w/3, (h*2)/4)
-        section5 = self.slicing(self.pic, (w/3), h/4, (w*2)/3, (h*2)/4)
-        section6 = self.slicing(self.pic, (w*2)/3, h/4, w, (h*2)/4)
-        # Third Quater
-        section7 = self.slicing(self.pic, 0, (h*2)/4, w/3, (h*3)/4)
-        section8 = self.slicing(self.pic, (w/3), (h*2)/4, (w*2)/3, (h*3)/4)
-        section9 = self.slicing(self.pic, (w*2)/3, (h*2)/4, w, (h*3)/4)
-        # Fourth Quater
-        section10 = self.slicing(self.pic, 0, (h*3)/4, w/3, h)
-        section11 = self.slicing(self.pic, (w/3), (h*3)/4, (w*2)/3, h)
-        section12 = self.slicing(self.pic, (w*2)/3, (h*3)/4, w, h)
-
-        # creates an arrays of the image slices
-        sectionArray.append(section1)
-        sectionArray.append(section2)
-        sectionArray.append(section3)
-        sectionArray.append(section4)
-        sectionArray.append(section5)
-        sectionArray.append(section6)
-        sectionArray.append(section7)
-        sectionArray.append(section8)
-        sectionArray.append(section9)
-        sectionArray.append(section10)
-        sectionArray.append(section11)
-        sectionArray.append(section12)
-
-        return sectionArray
-
-    # Copy function
-    def arrange(self, section, whole, placeX, placeY):
-        w = getWidth(section)
-        h = getHeight(section)
-
-        sectionPixels = []
-        wholePixels = []
-
-        for secX in range(0, w):
-            for secY in range(0, h):
-                secP = getPixel(section, secX, secY)
-                sectionPixels.append(secP)
-        for wholeX in range(placeX, placeX+w):
-            for wholeY in range(placeY, placeY+h):
-                wholeP = getPixel(whole, wholeX, wholeY)
-                wholePixels.append(wholeP)
-        for combine in zip(sectionPixels, wholePixels):
-            secPix = combine[0]
-            wholePix = combine[1]
-            setColor(wholePix, getColor(secPix))
-        return wholePix
-
-    # Creates the puzzle image
-
-    def scrambled(self):
-        w = getWidth(self.pic)
-        h = getHeight(self.pic)
-        section = self.puzzleSlices(self.pic)
-
-        # Creates an array of 12 numbers 0-11 with no repeats
-        r = random.sample(range(12), 12)
-
-        puzzle = makeEmptyPicture(w, h)
-        self.arrange(section[r[0]], puzzle, 0, 0)
-        self.arrange(section[r[1]], puzzle, w/3, 0)
-        self.arrange(section[r[2]], puzzle, (w*2)/3, 0)
-
-        self.arrange(section[r[3]], puzzle, 0, h/4)
-        self.arrange(section[r[4]], puzzle, w/3, h/4)
-        self.arrange(section[r[5]], puzzle, (w*2)/3, h/4)
-
-        self.arrange(section[r[6]], puzzle, 0, (h*2)/4)
-        self.arrange(section[r[7]], puzzle, w/3, (h*2)/4)
-        self.arrange(section[r[8]], puzzle, (w*2)/3, (h*2)/4)
-
-        self.arrange(section[r[9]], puzzle, 0, (h*3)/4)
-        self.arrange(section[r[10]], puzzle, w/3, (h*3)/4)
-        self.arrange(section[r[11]], puzzle, (w*2)/3, (h*3)/4)
-
-        return puzzle
-
-
 def clip(source, start, end):
     target = makeEmptySound(end - start, int(getSamplingRate(source)))
     targetIndex = 0
@@ -397,9 +274,28 @@ class Question():
         self.image_path = image_path
 
     def getScrambledImage(self):
-        pic = Puzzle(self.image_path)
-        picture = pic.scrambled()
-        return picture
+        slice_num = 4
+        picture = makePicture("%s/%s" % (PATH, self.image_path))
+        width = getWidth(picture)
+        height = getHeight(picture)
+        scrambled_picture = makeEmptyPicture(width, height)
+        slice_width = width / slice_num
+        slice_height = height / slice_num
+        slices = range(0, slice_num * slice_num)
+        random.shuffle(slices)
+        current_slice = 0
+    
+        for x in range(0, slice_num):
+            for y in range(0, slice_num):  
+                col = slices[current_slice] % slice_num
+                row = slices[current_slice] // slice_num
+                for orig_x in range(x * slice_width, slice_width + (x * slice_width)):
+                    for orig_y in range(y * slice_height, slice_height + (y * slice_height)):
+                        px = getPixel(picture, orig_x, orig_y)
+                        color = getColor(px)
+                        setColor(getPixel(scrambled_picture, (orig_x - (x * slice_width)) + (col * slice_width), (orig_y - (y * slice_height)) + (row * slice_height)), color)
+                current_slice += 1
+        return scrambled_picture
 
     def getAnswerValues(self):
         return [answer.value for answer in self.answers]
