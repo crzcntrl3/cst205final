@@ -334,7 +334,7 @@ def intro():
     showInformation("Welcome to the quiz")
 
 
-def game():
+def main():
     intro()
 
     # choose the topic
@@ -347,4 +347,4 @@ def game():
     quiz.start()
 
 
-game()
+main()
