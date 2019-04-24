@@ -3,7 +3,8 @@ import os
 import random
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-# Topics to choose for Quiz
+
+# Options to choose from for quiz game
 GAME_OPTIONS = [
     {
         'topic': 'Car parts',
@@ -104,7 +105,7 @@ GAME_OPTIONS = [
         'topic': 'Human anatomy',
         'questions': [
             {
-                'value': 'What makes humans do',
+                'value': 'What produces active vitamin D in humans?',
                 'image_path': 'pictures/kidneys.jpg',
                 'answers': [
                     {
@@ -122,7 +123,7 @@ GAME_OPTIONS = [
                 ]
             },
             {
-                'value': 'What is responsible for human',
+                'value': 'What organ is roughly the size of an adult fist?',
                 'image_path': 'pictures/heart.jpg',
                 'answers': [
                     {
@@ -140,7 +141,7 @@ GAME_OPTIONS = [
                 ]
             },
             {
-                'value': 'What is human',
+                'value': 'What can be considered a "fleshy storage tank"?',
                 'image_path': 'pictures/bladder.jpg',
                 'answers': [
                     {
@@ -287,7 +288,7 @@ def copy(source, target, start):
         setSampleValueAt(target, targetIndex, value)
     return target
 
-#  Class to handle
+#  Class to handle quiz instances
 class Quiz():
     def __init__(self, questions):
         self.questions = questions
@@ -312,15 +313,15 @@ class Quiz():
             self.handleWin()
         else:
             self.handleLose()
-
+    # Scramle image and present question
     def printQuestion(self, question):
         show(question.getScrambledImage())
         printNow(question.question)
         for index, answer in enumerate(question.getAnswerValues()):
             print("%s. %s" % (index + 1, answer))
-
+    # Handle user input
     def handleInput(self, question):
-        printNow("Enter your answer")
+        printNow("Input answer from selection below: ")
         while True:
             response = raw_input()
             if response and int(response) in range(1, len(question.answers) + 1):
@@ -331,44 +332,47 @@ class Quiz():
                 printNow("Please enter a valid response")
 
         return response
-
+    # Determine if we are on the last question of selected topic
     def isLastQuestion(self):
         return len(self.correct) + len(self.incorrect) == len(self.questions)
-
+    # Correct answer response
     def handleCorrectAnswer(self, question):
         self.correct.append(question)
         show(question.getUnscrambledImage())
 
         if not self.isLastQuestion():
-            printNow("You are right!\n")
+            printNow("That is right!\n")
             reaction = random.choice(self.game_sounds['yays'])
             play(reaction)
-
+    # Incorrect answer response
     def handleIncorrectAnswer(self, question):
         self.incorrect.append(question)
         show(question.getUnscrambledImage())
 
         if not self.isLastQuestion():
-            printNow("Wrong answer!\n")
+            printNow("Sorry, that is the wrong answer!\n")
             reaction = random.choice(self.game_sounds['oohs'])
             play(reaction)
-
+    # Winning response
     def handleWin(self):
         play(self.game_sounds['win'][0])
-        showInformation("You win!\n"
+        showInformation("You have WON!\n"
+                        "Below are your results: \n"
                         "Correct answers: %s\n"
                         "Incorrect answers: %s" % (
                             len(self.correct), len(self.incorrect))
                         )
-
+    # Losing response
     def handleLose(self):
         play(self.game_sounds['lose'][0])
-        showInformation("You lose!\n"
+        showInformation("Sorry, you loss!\n"
+                        "Better luck next time! \n"
+                        "Below are your results: \n
                         "Correct answers: %s\n"
                         "Incorrect answers: %s" % (
                             len(self.correct), len(self.incorrect))
                         )
-
+    # Sounds used for this guessing game
     def makeGameSounds(self):
         samplingRate = 44100
         oohs = makeSound("%s/sounds/oohs.wav" % PATH)
@@ -408,14 +412,14 @@ class Quiz():
             ],
         }
 
-
+# Class to handle question instances
 class Question():
     def __init__(self, question, answers, image_path=''):
         self.question = question
         self.answers = answers
         self.image_path = image_path
 
-
+    # Scramble quiz images
     def getScrambledImage(self):
         slice_num = 8
         picture = makePicture("%s/%s" % (PATH, self.image_path))
@@ -448,21 +452,21 @@ class Question():
 
     def getAnswer(self, index):
         return self.answers[index]
-
+    # Function to display original image
     def getUnscrambledImage(self):
         return makePicture("%s/%s" % (PATH, self.image_path))
 
-
+# Class to handle answer instances
 class Answer():
     def __init__(self, value, is_correct=False):
         self.value = value
         self.is_correct = is_correct
 
-
+# Determine user selection for quiz topic
 def chooseGameTopic():
     topics = [option['topic'] for option in GAME_OPTIONS]
 
-    printNow("Choose topic:")
+    printNow("Choose topics below to be quizzed on:")
     for index, topic in enumerate(topics):
         printNow("%s. %s" % (index + 1, topic))
 
@@ -476,7 +480,17 @@ def chooseGameTopic():
 def intro():
     intro = makeSound("%s/sounds/intro.wav" % PATH)
     play(intro)
-    showInformation("Welcome to the quiz")
+    printNow("\n" + "*" * 60)
+    printNow("* ----- Image Gussing Game ----- *")
+    printNow("* You will test your wit in the topics we have presented! ")
+    printNow("* DIRECTIONS: ")
+    printNow("* Select your topic by inputing a number selection")
+    printNow("* Dependent on your topic, guess what the scrammbled image could be")
+    printNow("* To WIN this game you must get more correct answers than incorrect")
+    printNow("*" * 60)
+    showInformation("Welcome to Our Image Guessing Game! \n"
+                    "Good luck, for things may not appear as they should be!"
+                    )
 
 
 def main():
