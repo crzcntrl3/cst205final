@@ -157,6 +157,24 @@ GAME_OPTIONS = [
                     },
                 ]
             },
+            {
+                'value': 'Which organ aids in digestion?',
+                'image_path': 'pictures/intestines.jpg',
+                'answers': [
+                    {
+                        'value': 'kidneys',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'bladder',
+                        'is_correct': False,
+                    },
+                    {
+                        'value': 'intestines',
+                        'is_correct': True,
+                    },
+                ]
+            },
         ]
     },
     {
