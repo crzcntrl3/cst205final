@@ -3,7 +3,9 @@ import os
 import random
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+EXIT_STR = "exit"
 
+# define the map of topics > questions > answers for the quiz game
 GAME_OPTIONS = [
     {
         'topic': 'Car parts',
@@ -27,7 +29,7 @@ GAME_OPTIONS = [
                 ]
             },
             {
-                'value': 'What Transmission component is this?',
+                'value': 'What transmission component is this?',
                 'image_path': 'pictures/clutchPlate.jpg',
                 'answers': [
                     {
@@ -45,7 +47,7 @@ GAME_OPTIONS = [
                 ]
             },
             {
-                'value': 'what suspension component is this?',
+                'value': 'What suspension component is this?',
                 'image_path': 'pictures/controlArm.jpg',
                 'answers': [
                     {
@@ -256,6 +258,8 @@ GAME_OPTIONS = [
     },
 ]
 
+
+# adds black frame around an image
 def addBlackFrame(picture):
     width = getWidth(picture)
     height = getHeight(picture)
@@ -266,6 +270,8 @@ def addBlackFrame(picture):
     addRectFilled(picture, width - thickness, 0, thickness, height, black)
     return picture
 
+
+# clips an audio clip to a specific length
 def clip(source, start, end):
     target = makeEmptySound(end - start, int(getSamplingRate(source)))
     targetIndex = 0
@@ -276,6 +282,7 @@ def clip(source, start, end):
     return target
 
 
+# copies an audio file to a specific start sample in a target file
 def copy(source, target, start):
     targetLength = getLength(target)
     for index in range(0, getLength(source)):
@@ -287,6 +294,7 @@ def copy(source, target, start):
     return target
 
 
+# main quiz class that is responsible for shpowing questions and keeping track of preogress
 class Quiz():
     def __init__(self, questions):
         self.questions = questions
@@ -294,11 +302,16 @@ class Quiz():
         self.incorrect = []
         self.game_sounds = self.makeGameSounds()
 
+    # iterates over questions and prompt user
     def start(self):
-        # Loop through questions and get answers for each
         for question in self.questions:
             self.printQuestion(question)
             response = self.handleInput(question)
+
+            if response == EXIT_STR:
+                printNow("Thanks for playing!")
+                return None
+
             answer = question.getAnswer(response - 1)
 
             if answer.is_correct:
@@ -312,62 +325,71 @@ class Quiz():
         else:
             self.handleLose()
 
+    # pretty print questions
     def printQuestion(self, question):
         show(question.getScrambledImage())
         printNow(question.question)
         for index, answer in enumerate(question.getAnswerValues()):
             print("%s. %s" % (index + 1, answer))
 
+    # handle user input
     def handleInput(self, question):
-        printNow("Enter your answer")
+        printNow("Please enter your answer now:")
         while True:
             response = raw_input()
-            if response and int(response) in range(1, len(question.answers) + 1):
+            if response == EXIT_STR:
+                break
+            elif response and int(response) in range(1, len(question.answers) + 1):
                 response = int(response)
-                print('\n')
                 break
             else:
-                printNow("Please enter a valid response")
+                printNow("Unrecognized input. Please try again.")
 
         return response
 
+    # check whether qucrrent question is last
     def isLastQuestion(self):
         return len(self.correct) + len(self.incorrect) == len(self.questions)
 
+    # handle the correct answer
     def handleCorrectAnswer(self, question):
         self.correct.append(question)
         show(question.getUnscrambledImage())
 
         if not self.isLastQuestion():
-            printNow("You are right!\n")
+            printNow("You are correct!\n")
             reaction = random.choice(self.game_sounds['yays'])
             play(reaction)
 
+    # handle the wrong answer
     def handleIncorrectAnswer(self, question):
         self.incorrect.append(question)
         show(question.getUnscrambledImage())
 
         if not self.isLastQuestion():
-            printNow("Wrong answer!\n")
+            printNow("Sorry, wrong answer!\n")
             reaction = random.choice(self.game_sounds['oohs'])
             play(reaction)
 
+    # handle the winning condition
     def handleWin(self):
         play(self.game_sounds['win'][0])
-        showInformation("You win!\n"
+        showInformation("You have won the game. Well done!\n"
                         "Correct answers: %s\n"
                         "Incorrect answers: %s" % (
                             len(self.correct), len(self.incorrect))
                         )
 
+    # handle the losing condition
     def handleLose(self):
         play(self.game_sounds['lose'][0])
-        showInformation("You lose!\n"
+        showInformation("Sorry, you lost the game. Better luck next time!\n"
                         "Correct answers: %s\n"
                         "Incorrect answers: %s" % (
                             len(self.correct), len(self.incorrect))
                         )
 
+    # generate all game sounds
     def makeGameSounds(self):
         samplingRate = 44100
         oohs = makeSound("%s/sounds/oohs.wav" % PATH)
@@ -408,13 +430,14 @@ class Quiz():
         }
 
 
+# a class responsible for questions
 class Question():
     def __init__(self, question, answers, image_path=''):
         self.question = question
         self.answers = answers
         self.image_path = image_path
 
-
+    # scramble an image by slicing and randomising it
     def getScrambledImage(self):
         slice_num = 8
         picture = makePicture("%s/%s" % (PATH, self.image_path))
@@ -438,26 +461,31 @@ class Question():
                         setColor(getPixel(scrambled_picture, (orig_x - (x * slice_width)) + (
                             col * slice_width), (orig_y - (y * slice_height)) + (row * slice_height)), color)
                 current_slice += 1
-                
+
         scrambled_picture = addBlackFrame(scrambled_picture)
         return scrambled_picture
 
+    # get all answer values for the question
     def getAnswerValues(self):
         return [answer.value for answer in self.answers]
 
+    # get a specific answer
     def getAnswer(self, index):
         return self.answers[index]
 
+    # get the opriginal unscrambled picrture
     def getUnscrambledImage(self):
         return makePicture("%s/%s" % (PATH, self.image_path))
 
 
+# basic class responsible for answers
 class Answer():
     def __init__(self, value, is_correct=False):
         self.value = value
         self.is_correct = is_correct
 
 
+# prompts user to choose game topic
 def chooseGameTopic():
     topics = [option['topic'] for option in GAME_OPTIONS]
 
@@ -467,28 +495,36 @@ def chooseGameTopic():
 
     while True:
         response = raw_input()
-        if response and int(response) in range(1, len(topics) + 1):
-            break
-    return int(response) - 1
+        if response == EXIT_STR:
+            return response
+        elif response and int(response) in range(1, len(topics) + 1):
+            return int(response) - 1
 
 
+# shows game intro
 def intro():
     intro = makeSound("%s/sounds/intro.wav" % PATH)
     play(intro)
-    showInformation("Welcome to the quiz")
+    showInformation("Welcome to the Guess That Picture quiz.\n"
+                    "To play this game please first select a topic\n"
+                    "Then pick correct answer to questions presented or type \"exit\" to quit.\n\n"
+                    "Good luck!")
 
 
+# main function
 def main():
     intro()
 
     # choose the topic
     topic = chooseGameTopic()
-
-    # load questions
-    questions = GAME_OPTIONS[topic]['questions']
-    quiz = Quiz([Question(question['value'], [Answer(value=answer['value'], is_correct=answer['is_correct'])
-                                              for answer in question['answers']], question['image_path']) for question in questions])
-    quiz.start()
+    if topic == EXIT_STR:
+        printNow("Thanks for playing!")
+    else:
+        # load questions
+        questions = GAME_OPTIONS[topic]['questions']
+        quiz = Quiz([Question(question['value'], [Answer(value=answer['value'], is_correct=answer['is_correct'])
+                                                  for answer in question['answers']], question['image_path']) for question in questions])
+        quiz.start()
 
 
 main()
