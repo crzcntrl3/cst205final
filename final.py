@@ -104,7 +104,7 @@ GAME_OPTIONS = [
         'topic': 'Human anatomy',
         'questions': [
             {
-                'value': 'What human organ filters blood in a pair?',
+                'value': 'Which human organ filters blood in a pair?',
                 'image_path': 'pictures/kidneys.png',
                 'answers': [
                     {
