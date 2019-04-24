@@ -288,7 +288,12 @@ def addBlackFrame(picture):
     addRectFilled(picture, width - thickness, 0, thickness, height, black)
     return picture
 
+<<<<<<< HEAD
 # Function that clips a given sound
+=======
+
+# clips an audio clip to a specific length
+>>>>>>> upstream/master
 def clip(source, start, end):
     target = makeEmptySound(end - start, int(getSamplingRate(source)))
     targetIndex = 0
@@ -298,7 +303,12 @@ def clip(source, start, end):
         targetIndex = targetIndex + 1
     return target
 
+<<<<<<< HEAD
 # Function to copy source to target
+=======
+
+# copies an audio file to a specific start sample in a target file
+>>>>>>> upstream/master
 def copy(source, target, start):
     targetLength = getLength(target)
     for index in range(0, getLength(source)):
@@ -309,7 +319,12 @@ def copy(source, target, start):
         setSampleValueAt(target, targetIndex, value)
     return target
 
+<<<<<<< HEAD
 #  Class to handle
+=======
+
+# main quiz class that is responsible for shpowing questions and keeping track of preogress
+>>>>>>> upstream/master
 class Quiz():
     def __init__(self, questions):
         self.questions = questions
