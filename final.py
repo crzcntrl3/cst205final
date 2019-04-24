@@ -104,8 +104,8 @@ GAME_OPTIONS = [
         'topic': 'Human anatomy',
         'questions': [
             {
-                'value': 'What makes humans do',
-                'image_path': 'pictures/kidneys.jpg',
+                'value': 'What human organ filters blood in a pair?',
+                'image_path': 'pictures/kidneys.png',
                 'answers': [
                     {
                         'value': 'lungs',
@@ -122,7 +122,7 @@ GAME_OPTIONS = [
                 ]
             },
             {
-                'value': 'What is responsible for human',
+                'value': 'Which organ is responsible for pumping blood?',
                 'image_path': 'pictures/heart.jpg',
                 'answers': [
                     {
@@ -140,8 +140,8 @@ GAME_OPTIONS = [
                 ]
             },
             {
-                'value': 'What is human',
-                'image_path': 'pictures/bladder.jpg',
+                'value': 'Which organ is a muscular sack in the pelvis?',
+                'image_path': 'pictures/bladder.jpeg',
                 'answers': [
                     {
                         'value': 'kidneys',
